@@ -5,7 +5,6 @@ from . import models
 from .services import db_commands
 
 
-# Create your views here.
 def index(request):
     """ Создает шаблон главной страницы """
     teams_and_persons = db_commands.persons_in_teams()

@@ -43,7 +43,9 @@ class Person(models.Model):
 
     def display_full_name(self) -> str:
         """ Отображает полное имя специалиста """
-        return f'{self.last_name} {self.first_name} {self.patronymic}'.strip()
+        if self.patronymic:
+            return f'{self.last_name} {self.first_name} {self.patronymic}'
+        return f'{self.last_name} {self.first_name}'
 
     display_full_name.short_description = 'Имя специалиста'
 

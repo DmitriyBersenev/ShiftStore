@@ -1,10 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+{% load static %}
+
+{% block static %}
+<script type="text/javascript" src="{% static 'js/schedule_interface/create_template.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="row justify-content-center mt-3">
+        <div class="col-auto border border-muted rounded bg-light">
+            <form id="create_template__form" method="post">{% csrf_token %}
+
+                <div class="form-row mt-3">
+                    <div class="form-group col-6">
+                        <label>Дата</label>
+                        <input type="month" class="form-control" min="2021-1" name="date" placeholder="">
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Норма часа</label>
+                        <input type="number" class="form-control" name="norma_hours" placeholder="Норма часов">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label>Выходные</label>
+                        <input type="text" class="form-control" name="holidays" placeholder="Введите: 1, 2, 3...">
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Перенос выходных</label>
+                        <input type="text" class="form-control" name="excepted_holidays"
+                               placeholder="Введите: 1, 2, 3...">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        <label for="google_sheet_name">Выбор гугл-таблицы</label>
+                        <select id="google_sheet_name" class="form-control" name="google_sheet_name">
+                            <option></option>
+                            {% for sheet_id, sheet_name in google_sheet_ids.items %}
+                            <option>{{ sheet_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row justify-content-center">
+                    <div class="form-group col-8 text-center">
+                        <label for="Teams">Команды</label>
+                        <select id="Teams" class="form-control" name="teams" multiple>
+                            {% for team in teams %}
+                            <option selected>{{ team }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group text-left">
+                    <div class="form-check">
+                        <input class="form-check-input" name="get_wishes" type="checkbox">
+                        <label class="form-check-label">Есть шаблон с пожеланиями</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-outline-success mb-3" id="create_template__btn">Создать шаблон
+                </button>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

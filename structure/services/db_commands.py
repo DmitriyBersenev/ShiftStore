@@ -1,5 +1,7 @@
 import json
 from datetime import datetime
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+
 from .. import models
 
 
@@ -13,9 +15,10 @@ def create_new_person(person_data: dict) -> bool:
     timezone = models.TimeZone.objects.get(timezone=person_data['timezone'])
     contract = models.ContractType.objects.get(contract_name=person_data['contract_type'])
 
+    pupil_index_in_schedule = 6
     person = models.Person(first_name=person_data['first_name'], last_name=person_data['last_name'],
                            patronymic=person_data['patronymic'], employment_date=employment_date, timezone=timezone,
-                           contract_type=contract)
+                           contract_type=contract, person_priority=pupil_index_in_schedule)
     person.save()
 
     for link in person_data['links']:
@@ -88,3 +91,31 @@ def persons_in_teams() -> dict:
         persons = sorted(team.persons.all(), key=lambda p: (p.person_priority, p.last_name))
         team_list[team] = persons
     return team_list
+
+
+def get_person_by_full_name(last_name: str, first_name: str, patronymic: str = '') -> tuple:
+    """
+    Возвращает специалиста из базы данных по заданным аргументам имени
+    :param last_name: фамилия;
+    :param first_name: имя;
+    :param patronymic: отчество;
+    :return: возвращает tuple, первым аргументом которого будет объект Person, а вторым описание ошибки если она есть.
+    Если при возврате есть ошибка, то первым аргументом идет False.
+    """
+    try:
+        if patronymic:
+            person = models.Person.objects.get(last_name=last_name, first_name=first_name, patronymic=patronymic)
+        elif first_name:
+            person = models.Person.objects.get(last_name=last_name, first_name=first_name)
+        else:
+            return False, 'Not enough arguments'
+
+    except ObjectDoesNotExist:
+        return False, 'Not found'
+    except MultipleObjectsReturned:
+        return False, 'Got two persons'
+
+    return person, ''
+
+
+

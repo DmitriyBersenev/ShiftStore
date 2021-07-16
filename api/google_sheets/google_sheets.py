@@ -22,7 +22,7 @@ class GoogleSheetsService:
         http_auth = credentials.authorize(httplib2.Http())
         return discovery.build('sheets', 'v4', http=http_auth)
 
-    def get_spreadsheet(self, spreadsheet_id: str, range_list: str, dimension: str = 'ROWS') -> dict:
+    def get_spreadsheet_list(self, spreadsheet_id: str, range_list: str, dimension: str = 'ROWS') -> dict:
         """
         Получает данные листа выбранной таблицы.
         :param spreadsheet_id: id таблицы
@@ -32,6 +32,20 @@ class GoogleSheetsService:
         spreadsheet = self.service.spreadsheets().values().get(
             spreadsheetId=spreadsheet_id,
             range=range_list,
+            majorDimension=dimension
+        ).execute()
+        return spreadsheet
+
+    def get_spreadsheet_all_lists(self, spreadsheet_id: str, range_lists: list, dimension: str = 'ROWS') -> dict:
+        """
+        Получает данные со всех листов выбранной таблицы.
+        :param spreadsheet_id: id таблицы
+        :param range_lists: списко с диапазонами всех листов, прописываются в формате Лист!A1:B3
+        :param dimension: подход получения данных. По рядам или по колонкам
+        """
+        spreadsheet = self.service.spreadsheets().values().batchGet(
+            spreadsheetId=spreadsheet_id,
+            ranges=range_lists,
             majorDimension=dimension
         ).execute()
         return spreadsheet

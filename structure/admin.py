@@ -17,7 +17,7 @@ class TeamAdmin(admin.ModelAdmin):
 
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
-    list_display = ('display_full_name', 'timezone', 'employment_date')
+    list_display = ('display_full_name', 'timezone', 'employment_date', 'person_priority')
 
     ordering = ('last_name', 'first_name')
 

@@ -19,4 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('structure/', include('structure.urls', namespace='structure')),
+    path('schedule_interface/', include('schedule_interface.urls', namespace='schedule_interface')),
 ]

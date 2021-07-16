@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'structure',
     'schedule',
     'persons_vacation',
+    'schedule_interface',
 ]
 
 MIDDLEWARE = [
