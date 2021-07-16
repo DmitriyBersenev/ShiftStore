@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block static %}
+<link rel="stylesheet" type="text/css" href="/static/css/structure/index.css"/>
+<script type="text/javascript" src="{% static 'js/structure/index.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <!--  Кнопки создания команд и специалистов  -->
+    <div class="row mt-5 text-center">
+        <div class="col-md mt-1">
+            <a class="btn btn-outline-success" href="../admin/structure/team/add/" role="button">Cоздать команду</a>
+        </div>
+        <div class="col-md mt-1">
+            <button class="btn btn-outline-success" id="open_create_person_form" type="submit">Cоздать специалиста
+            </button>
+        </div>
+    </div>
+
+    <!--  Сетка отображения команд  -->
+    <div class="row mt-5 justify-content-center">
+        {% for team, persons in teams_and_persons.items %}
+        <div class="col-auto col-md-6 col-lg-auto mb-3">
+            <div class="card">
+                <div class="card-header text-center">
+                    <a class="edit_team_btn" href="../admin/structure/team/{{team.id}}">{{ team.name }}</a>
+                </div>
+                <div class="card-body">
+                    {% for person in persons %}
+                    <div class="row no-gutters">
+                        <div class="col-auto mr-1"><p class="card-text">{{ forloop.counter }}.</p></div>
+                        <div class="col-auto"><p class="card-text">
+                            {{ person.last_name }} {{ person.first_name }} {{ person.patronymic }}</p></div>
+                        <div class="col-auto">
+
+                            <!--  Меню специалистов -->
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-link dropdown-toggle shadow-none"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&vellip;
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="../admin/structure/person/{{person.id}}">Редактировать</a>
+                                    <a class="dropdown-item open_transfer_person_form" data-person_id="{{ person.id }}"
+                                       data-person_team="{{ team.name }}" href="#">Перевод</a>
+                                    <a class="dropdown-item open_fire_person_form" data-person_id="{{ person.id }}"
+                                       href="#">Увольнение</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item remove__btn" data-person_id="{{ person.id }}"
+                                       href="#">Удалить</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!--  Форма создания специалиста  -->
+    <div class="modal" id="createPerson" role="dialog" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5>Создать специалиста</h5>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="create_person__form" method="post">{% csrf_token %}
+                        <div class="row mt-3">
+                            <div class="col">
+                                <input type="text" class="form-control" id="LastNameInput" name="last_name"
+                                       placeholder="Фамилия*">
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" id="FirstNameInput" name="first_name"
+                                       placeholder="Имя*">
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" id="Patronymic" name="patronymic"
+                                       placeholder="Отчество">
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label for="EmploymentDate">Дата трудоустройства</label>
+                                <input type="date" class="form-control" id="EmploymentDate" name="employment_date">
+                            </div>
+                            <div class="col">
+                                <label for="TimeZone">Часовой пояс</label>
+                                <select id="TimeZone" class="form-control" name="timezone">
+                                    {% for time in timezone %}
+                                    <option>{{ time }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                <label for="Teams">Команда</label>
+                                <select id="Teams" class="form-control" name="team">
+                                    {% for team in teams_and_persons %}
+                                    <option>{{ team }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label for="Contracts">Тип договора</label>
+                                <select id="Contracts" class="form-control" name="contract_type">
+                                    {% for contract in contract_types %}
+                                    <option>{{ contract }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label for="Links">Канал связи</label>
+                                <select id="Links" class="form-control" multiple size="3" name="links">
+                                    {% for link in links %}
+                                    <option>{{ link }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label for="Roles">Роли</label>
+                                <select id="Roles" class="form-control" multiple size="4" name="roles">
+                                    {% for role in roles %}
+                                    <option>{{ role }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-dismiss="modal" aria-label="Close"
+                            id="create_person__form_btn">Создать
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--  Модальное окно увольнения специалиста  -->
+    <div class="modal" id="firePerson" role="dialog" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Уволить специалиста</h5>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="fired_person__form" method="post">{% csrf_token %}
+                        <label>Дата увольнения</label>
+                        <input type="date" class="form-control" name="fired_date">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-dismiss="modal" aria-label="Close"
+                            id="fired_person__btn">Уволить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--  Модальное окно обмена специалиста  -->
+    <div class="modal" id="transferPerson" role="dialog" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Перевести специалиста</h5>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="transfer_person__form" method="post">{% csrf_token %}
+                        <div class="row">
+                            <div class="col">
+                                <label>Перевести в:</label>
+                                <select class="form-control" name="new_team">
+                                    {% for team in teams_and_persons %}
+                                    <option>{{ team }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-dismiss="modal" aria-label="Close"
+                            id="transfer_person__btn">Перевести
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

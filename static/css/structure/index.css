@@ -1,0 +1,23 @@
+.btn-link,
+.edit_team_btn {
+    color: black;
+    font-weight: 700;
+}
+
+.edit_team_btn {
+    font-size: 17px;
+}
+
+.btn-link:hover,
+.btn-link:focus,
+.edit_team_btn:hover,
+.edit_team_btn:focus {
+    color: grey;
+    text-decoration: none;
+}
+
+.btn-link::before,
+.btn-link::after {
+    border: none;
+    content: none;
+}
